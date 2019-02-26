@@ -1,74 +1,61 @@
 class NegociacaoService {
 
-    obterNegociacaoDaSemana(){
+    constructor() {
+        this._http = new HttpService();
+    }
 
-        return new Promise((resolve, reject) => {
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", "negociacoes/semana");
+    obterNegociacoes(periodo){
 
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState == 4) {
-                    if (xhr.status == 200) {
-                        resolve(JSON.parse(xhr.responseText)
-                        .map(n => new Negociacao(new Date(n.data), n.quantidade, n.valor)));
-                    }
-                    else {
-                        console.log(xhr.responseText);
-                        reject("Não foi possível obter as negociações da semana!");
-                    }
-                }
-            };
+        return Promise.all([
+            this.obterNegociacoesDaSemana(),
+            this.obterNegociacoesDaSemanaAnterior(),
+            this.obterNegociacoesDaSemanaRetrasada()
+        ]).then(periodos => {
 
-            xhr.send();
+            let negociacoes = periodos
+            .reduce((dados, periodo) => dados.concat(periodo), []);
+
+            return negociacoes;
+
+        }).catch(erro => {
+            throw new Error(erro);
         });
 
     }
 
-    obterNegociacaoDaSemanaPassada(){
+    obterNegociacoesDaSemana(){
 
-        return new Promise((resolve, reject) => {
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", "negociacoes/anteriors");
-
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState == 4) {
-                    if (xhr.status == 200) {
-                        resolve(JSON.parse(xhr.responseText)
-                        .map(n => new Negociacao(new Date(n.data), n.quantidade, n.valor)));
-                    }
-                    else {
-                        console.log(xhr.responseText);
-                        reject("Não foi possível obter as negociações da semana anterior!");
-                    }
-                }
-            };
-
-            xhr.send();
-        });
+        return this._http
+            .get("negociacoes/semana")
+            .then(negociacoes => negociacoes.map(n => new Negociacao(new Date(n.data), n.quantidade, n.valor)))
+            .catch(erro => {
+                console.log(erro);
+                throw new Error("Não foi possível obter as negociações da semana!");
+            });
 
     }
 
-    obterNegociacaoDaSemanaRetrasada(){
+    obterNegociacoesDaSemanaAnterior(){
 
-        return new Promise((resolve, reject) => {
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", "negociacoes/retrasada");
+        return this._http
+            .get("negociacoes/anterior")
+            .then(negociacoes => negociacoes.map(n => new Negociacao(new Date(n.data), n.quantidade, n.valor)))
+            .catch(erro => {
+                console.log(erro);
+                throw new Error("Não foi possível obter as negociações da semana passada!");
+            });
 
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState == 4) {
-                    if (xhr.status == 200) {
-                        resolve(JSON.parse(xhr.responseText)
-                        .map(n => new Negociacao(new Date(n.data), n.quantidade, n.valor)));
-                    }
-                    else {
-                        console.log(xhr.responseText);
-                        reject("Não foi possível obter as negociações da semana retrasada!");
-                    }
-                }
-            };
+    }
 
-            xhr.send();
-        });
+    obterNegociacoesDaSemanaRetrasada(){
+
+        return this._http
+            .get("negociacoes/retrasada")
+            .then(negociacoes => negociacoes.map(n => new Negociacao(new Date(n.data), n.quantidade, n.valor)))
+            .catch(erro => {
+                console.log(erro);
+                throw new Error("Não foi possível obter as negociações da semana retrasada!");
+            });
 
     }
 }
