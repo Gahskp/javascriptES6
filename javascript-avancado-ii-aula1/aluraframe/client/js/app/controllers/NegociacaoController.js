@@ -43,14 +43,9 @@ class NegociacaoController {
 
   importaNegociacoes(){
       let service = new NegociacaoService();
-      service.obterNegociacaoDaSemana((erro, negociacoes) => {
-          if (erro) {
-              this._mensagem.mensagem = erro;
-              return;
-          } else {
-              negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
-              this._mensagem.mensagem = "Negociação adicionada com sucesso!";
-          }
-      });
+      let promise = service.obterNegociacaoDaSemana()
+      promise
+        .then(negociacoes => negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao)))
+        .catch(erro => console.log(erro));
   }
 }
