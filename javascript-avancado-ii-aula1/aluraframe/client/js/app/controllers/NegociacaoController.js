@@ -9,7 +9,7 @@ class NegociacaoController {
     this._listaNegociacoes = new Bind(
         new ListaNegociacoes(),
         new NegociacoesView($("#negociacoesView")),
-        'adiciona', 'esvazia'
+        'adiciona', 'esvazia', 'ordena', 'inverteOrdem'
     );
 
     this._mensagem = new Bind(
@@ -17,6 +17,8 @@ class NegociacaoController {
         new MensagemView($("#mensagemView")),
         'mensagem'
     );
+
+    this._ordemAtual = '';
   }
   _criaNegociacao(){
     return new Negociacao(DataHelper.textoParaData(this._inputData.value),
@@ -43,13 +45,21 @@ class NegociacaoController {
 
   importaNegociacoes() {
 
-        let service = new NegociacaoService();
-        service
-        .obterNegociacoes()
-        .then(negociacoes => {
+      let service = new NegociacaoService();
+      service
+      .obterNegociacoes()
+      .then(negociacoes => {
           negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
           this._mensagem.mensagem = 'Negociações do período importadas com sucesso';
-        })
-        .catch(error => this._mensagem.mensagem = error);
-    }
+      })
+      .catch(error => this._mensagem.mensagem = error);
+
+  }
+
+  ordena(coluna){
+      if (this._ordemAtual == coluna) this._listaNegociacoes.inverteOrdem();
+      else this._listaNegociacoes.ordena((a, b) => a[coluna] - b[coluna]);
+      this._ordemAtual = coluna;
+  }
+
 }
