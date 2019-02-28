@@ -39,6 +39,7 @@ class NegociacaoController {
 
   apaga(){
       this._listaNegociacoes.esvazia();
+      this._mensagem.mensagem = "Negociações deletadas com sucesso!";
   }
 
   _limpaFormulario(){
