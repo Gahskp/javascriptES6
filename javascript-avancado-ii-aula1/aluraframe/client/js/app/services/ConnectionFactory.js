@@ -25,4 +25,8 @@ class ConnectionFactory {
             }
         });
     }
+
+    static _createStores(){
+        
+    }
 }
