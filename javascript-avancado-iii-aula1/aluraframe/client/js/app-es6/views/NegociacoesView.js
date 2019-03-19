@@ -1,4 +1,7 @@
-class NegociacoesView extends View{
+import {View} from './View';
+import {DateHelper} from '../helpers/DateHelper';
+
+export class NegociacoesView extends View{
 
     template(model) {
         return `
@@ -16,7 +19,7 @@ class NegociacoesView extends View{
                     ${model.negociacoes.map(n =>
                         `
                             <tr>
-                                <td>${DataHelper.dataParaTexto(n.data)}</td>
+                                <td>${DateHelper.dataParaTexto(n.data)}</td>
                                 <td>${n.quantidade}</td>
                                 <td>${n.valor}</td>
                                 <td>${n.volume}</td>
